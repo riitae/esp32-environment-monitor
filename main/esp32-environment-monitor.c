@@ -4,6 +4,7 @@
 #include "freertos/task.h"
 
 #include "environmental_sensor.h"
+#include "wifi_manager.h"
 
 static void sensor_monitor_task(void *pvParameters)
 {
@@ -48,6 +49,8 @@ void app_main(void)
     {
         printf("Environmental sensor initialized successfully\n");
     }
+
+    wifi_manager_init();
 
     xTaskCreate(
         sensor_monitor_task,
