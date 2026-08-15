@@ -1,31 +1,9 @@
 #include <stdio.h>
-#include <assert.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 #include "environmental_sensor.h"
-
-static void test_environmental_sensor(void)
-{
-    environmental_data_t data;
-
-    printf("\n=== Environmental Sensor Test ===\n");
-
-    assert(environmental_sensor_init() == 0);
-
-    printf("Sensor initialized successfully.\n");
-
-    assert(environmental_sensor_read(&data) == 0);
-
-    printf("Temperature: %.1f C\n", data.temperature);
-    printf("Humidity: %.1f %%\n", data.humidity);
-
-    assert(data.temperature == 24.5f);
-    assert(data.humidity == 50.0f);
-
-    printf("All sensor tests passed!\n");
-}
 
 static void sensor_monitor_task(void *pvParameters)
 {
@@ -41,7 +19,7 @@ static void sensor_monitor_task(void *pvParameters)
         }
         else
         {
-            printf("Failed to read environmental data\n");
+            printf("ERROR: Failed to read environmental sensor\n");
         }
 
         vTaskDelay(pdMS_TO_TICKS(2000));
@@ -50,7 +28,26 @@ static void sensor_monitor_task(void *pvParameters)
 
 void app_main(void)
 {
-    test_environmental_sensor();
+    if (environmental_sensor_init() != 0)
+    {
+        printf("ERROR: Environmental sensor initialization failed\n");
+
+        while (1)
+        {
+            printf("Sensor unavailable. Retrying in 5 seconds...\n");
+            vTaskDelay(pdMS_TO_TICKS(5000));
+
+            if (environmental_sensor_init() == 0)
+            {
+                printf("Environmental sensor initialized successfully\n");
+                break;
+            }
+        }
+    }
+    else
+    {
+        printf("Environmental sensor initialized successfully\n");
+    }
 
     xTaskCreate(
         sensor_monitor_task,
