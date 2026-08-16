@@ -5,6 +5,7 @@
 
 #include "environmental_sensor.h"
 #include "wifi_manager.h"
+#include "mqtt_manager.h"
 
 static void sensor_monitor_task(void *pvParameters)
 {
@@ -13,11 +14,16 @@ static void sensor_monitor_task(void *pvParameters)
     while (1)
     {
         if (environmental_sensor_read(&data) == 0)
-        {
-            printf("Temperature: %.1f C | Humidity: %.1f %%\n",
-                   data.temperature,
-                   data.humidity);
-        }
+{
+    printf("Temperature: %.1f C | Humidity: %.1f %%\n",
+           data.temperature,
+           data.humidity);
+
+    mqtt_publish_environment(
+        data.temperature,
+        data.humidity
+    );
+}
         else
         {
             printf("ERROR: Failed to read environmental sensor\n");
@@ -51,6 +57,7 @@ void app_main(void)
     }
 
     wifi_manager_init();
+    mqtt_manager_init();
 
     xTaskCreate(
         sensor_monitor_task,
