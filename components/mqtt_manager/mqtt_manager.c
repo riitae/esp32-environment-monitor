@@ -4,8 +4,7 @@
 
 #include "mqtt_client.h"
 #include "esp_log.h"
-
-#define MQTT_BROKER_URI "mqtt://YOUR_MQTT_BROKER"
+#include "sdkconfig.h"
 
 static const char *TAG = "mqtt_manager";
 
@@ -42,7 +41,7 @@ static void mqtt_event_handler(
 void mqtt_manager_init(void)
 {
     const esp_mqtt_client_config_t mqtt_config = {
-        .broker.address.uri = MQTT_BROKER_URI,
+        .broker.address.uri = CONFIG_MQTT_BROKER_URI,
     };
 
     mqtt_client = esp_mqtt_client_init(&mqtt_config);

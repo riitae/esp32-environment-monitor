@@ -1,4 +1,5 @@
 #include "wifi_manager.h"
+#include "sdkconfig.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
@@ -9,9 +10,6 @@
 #include "esp_wifi.h"
 
 #include "nvs_flash.h"
-
-#define WIFI_SSID "YOUR_WIFI_NAME"
-#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
 
 #define WIFI_CONNECTED_BIT BIT0
 
@@ -94,8 +92,8 @@ void wifi_manager_init(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = WIFI_SSID,
-            .password = WIFI_PASSWORD,
+           .ssid = CONFIG_WIFI_SSID,
+           .password = CONFIG_WIFI_PASSWORD,
         },
     };
 
