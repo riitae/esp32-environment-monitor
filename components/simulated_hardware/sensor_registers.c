@@ -29,10 +29,15 @@ uint8_t simulated_sensor_read_register(uint8_t reg)
 {
     static int counter = 0;
 
-    if (reg == REG_TEMPERATURE_MSB ||
-        reg == REG_TEMPERATURE_LSB ||
-        reg == REG_HUMIDITY_MSB ||
-        reg == REG_HUMIDITY_LSB)
+    /*
+     * Update the simulated sensor once per complete
+     * environmental reading.
+     *
+     * The temperature MSB is the first register read,
+     * so we update the sensor values only at that point.
+     * The following three register reads use the same values.
+     */
+    if (reg == REG_TEMPERATURE_MSB)
     {
         counter++;
 

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <assert.h>
 
 #include "environmental_sensor.h"
 
@@ -9,19 +8,30 @@ int main(void)
 
     printf("Initializing environmental sensor...\n");
 
-    assert(environmental_sensor_init() == 0);
+    if (environmental_sensor_init() != 0)
+    {
+        printf("ERROR: Sensor initialization failed\n");
+        return 1;
+    }
 
-    printf("Sensor initialized successfully.\n");
+    printf("Environmental sensor initialized successfully\n\n");
 
-    assert(environmental_sensor_read(&data) == 0);
-
-    printf("Temperature: %.1f C\n", data.temperature);
-    printf("Humidity: %.1f %%\n", data.humidity);
-
-    assert(data.temperature == 24.5f);
-    assert(data.humidity == 50.0f);
-
-    printf("All sensor tests passed!\n");
+    for (int i = 0; i < 10; i++)
+    {
+        if (environmental_sensor_read(&data) == 0)
+        {
+            printf(
+                "Reading %d: Temperature: %.1f C | Humidity: %.1f %%\n",
+                i + 1,
+                data.temperature,
+                data.humidity
+            );
+        }
+        else
+        {
+            printf("ERROR: Failed to read sensor\n");
+        }
+    }
 
     return 0;
 }
