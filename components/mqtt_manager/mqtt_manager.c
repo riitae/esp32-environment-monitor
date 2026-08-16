@@ -16,9 +16,6 @@ static void mqtt_event_handler(
     int32_t event_id,
     void *event_data)
 {
-    esp_mqtt_event_handle_t event =
-        (esp_mqtt_event_handle_t)event_data;
-
     switch ((esp_mqtt_event_id_t)event_id)
     {
         case MQTT_EVENT_CONNECTED:
