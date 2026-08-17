@@ -1,5 +1,6 @@
 #include "mqtt_manager.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "mqtt_client.h"
@@ -9,6 +10,7 @@
 static const char *TAG = "mqtt_manager";
 
 static esp_mqtt_client_handle_t mqtt_client;
+static bool mqtt_connected = false;
 
 static void mqtt_event_handler(
     void *handler_args,
@@ -19,10 +21,12 @@ static void mqtt_event_handler(
     switch ((esp_mqtt_event_id_t)event_id)
     {
         case MQTT_EVENT_CONNECTED:
+            mqtt_connected = true;
             ESP_LOGI(TAG, "MQTT connected");
             break;
 
         case MQTT_EVENT_DISCONNECTED:
+            mqtt_connected = false;
             ESP_LOGI(TAG, "MQTT disconnected");
             break;
 
@@ -59,10 +63,20 @@ void mqtt_manager_init(void)
     ESP_LOGI(TAG, "MQTT initialization complete");
 }
 
-void mqtt_publish_environment(
+int mqtt_publish_environment(
     float temperature,
     float humidity)
 {
+    if (!mqtt_connected)
+    {
+        ESP_LOGW(
+            TAG,
+            "MQTT not connected. Skipping publish."
+        );
+
+        return -1;
+    }
+
     char temperature_message[32];
     char humidity_message[32];
 
@@ -80,7 +94,7 @@ void mqtt_publish_environment(
         humidity
     );
 
-    esp_mqtt_client_publish(
+    int temperature_result = esp_mqtt_client_publish(
         mqtt_client,
         "environment/temperature",
         temperature_message,
@@ -89,7 +103,7 @@ void mqtt_publish_environment(
         0
     );
 
-    esp_mqtt_client_publish(
+    int humidity_result = esp_mqtt_client_publish(
         mqtt_client,
         "environment/humidity",
         humidity_message,
@@ -97,4 +111,16 @@ void mqtt_publish_environment(
         1,
         0
     );
+
+    if (temperature_result < 0 || humidity_result < 0)
+    {
+        ESP_LOGE(
+            TAG,
+            "Failed to publish environmental data"
+        );
+
+        return -1;
+    }
+
+    return 0;
 }

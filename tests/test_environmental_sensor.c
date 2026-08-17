@@ -6,32 +6,44 @@ int main(void)
 {
     environmental_data_t data;
 
-    printf("Initializing environmental sensor...\n");
+    printf("=== Environmental Sensor Test ===\n\n");
 
     if (environmental_sensor_init() != 0)
     {
-        printf("ERROR: Sensor initialization failed\n");
+        printf("FAIL: Sensor initialization failed\n");
         return 1;
     }
 
-    printf("Environmental sensor initialized successfully\n\n");
+    printf("PASS: Sensor initialized successfully\n\n");
 
     for (int i = 0; i < 10; i++)
     {
-        if (environmental_sensor_read(&data) == 0)
+        if (environmental_sensor_read(&data) != 0)
         {
-            printf(
-                "Reading %d: Temperature: %.1f C | Humidity: %.1f %%\n",
-                i + 1,
-                data.temperature,
-                data.humidity
-            );
+            printf("FAIL: Reading %d failed\n", i + 1);
+            return 1;
         }
-        else
+
+        printf(
+            "Reading %2d | Temperature: %5.1f C | Humidity: %5.1f %%\n",
+            i + 1,
+            data.temperature,
+            data.humidity
+        );
+
+        if (data.temperature < 20.0f || data.temperature > 30.0f)
         {
-            printf("ERROR: Failed to read sensor\n");
+            printf("FAIL: Temperature out of expected range\n");
+            return 1;
+        }
+
+        if (data.humidity < 40.0f || data.humidity > 60.0f)
+        {
+            printf("FAIL: Humidity out of expected range\n");
+            return 1;
         }
     }
 
+    printf("\nPASS: All sensor readings are valid\n");
     return 0;
 }

@@ -37,7 +37,8 @@ static void wifi_event_handler(
     else if (event_base == IP_EVENT &&
              event_id == IP_EVENT_STA_GOT_IP)
     {
-        ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+        ip_event_got_ip_t *event =
+            (ip_event_got_ip_t *)event_data;
 
         ESP_LOGI(
             TAG,
@@ -92,8 +93,8 @@ void wifi_manager_init(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-           .ssid = CONFIG_WIFI_SSID,
-           .password = CONFIG_WIFI_PASSWORD,
+            .ssid = CONFIG_WIFI_SSID,
+            .password = CONFIG_WIFI_PASSWORD,
         },
     };
 
@@ -113,4 +114,28 @@ void wifi_manager_init(void)
     );
 
     ESP_LOGI(TAG, "Wi-Fi initialization complete");
+}
+
+int wifi_manager_wait_for_connection(void)
+{
+    EventBits_t bits = xEventGroupWaitBits(
+        wifi_event_group,
+        WIFI_CONNECTED_BIT,
+        pdFALSE,
+        pdTRUE,
+        pdMS_TO_TICKS(30000)
+    );
+
+    if ((bits & WIFI_CONNECTED_BIT) != 0)
+    {
+        ESP_LOGI(TAG, "Wi-Fi connection ready");
+        return 0;
+    }
+
+    ESP_LOGE(
+        TAG,
+        "Wi-Fi connection timeout"
+    );
+
+    return -1;
 }

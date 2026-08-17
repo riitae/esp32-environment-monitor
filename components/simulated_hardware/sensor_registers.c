@@ -2,11 +2,14 @@
 
 static uint8_t sensor_registers[256];
 
+static int counter = 0;
 static int temperature = 245;
 static int humidity = 500;
 
 void simulated_sensor_init(void)
 {
+    counter = 0;
+
     sensor_registers[REG_DEVICE_ID] = 0x60;
 
     temperature = 245;
@@ -27,8 +30,6 @@ void simulated_sensor_init(void)
 
 uint8_t simulated_sensor_read_register(uint8_t reg)
 {
-    static int counter = 0;
-
     /*
      * Update the simulated sensor once per complete
      * environmental reading.

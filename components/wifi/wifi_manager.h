@@ -3,4 +3,6 @@
 
 void wifi_manager_init(void);
 
+int wifi_manager_wait_for_connection(void);
+
 #endif

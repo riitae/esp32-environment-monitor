@@ -5,7 +5,7 @@
 
 void mqtt_manager_init(void);
 
-void mqtt_publish_environment(
+int mqtt_publish_environment(
     float temperature,
     float humidity
 );

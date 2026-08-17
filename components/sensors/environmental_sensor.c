@@ -77,5 +77,20 @@ int environmental_sensor_read(environmental_data_t *data)
     data->temperature = temperature_raw / 10.0f;
     data->humidity = humidity_raw / 10.0f;
 
+    /*
+     * Validate the converted sensor values.
+     */
+    if (data->temperature < -40.0f ||
+        data->temperature > 85.0f)
+    {
+        return -1;
+    }
+
+    if (data->humidity < 0.0f ||
+        data->humidity > 100.0f)
+    {
+        return -1;
+    }
+
     return 0;
 }

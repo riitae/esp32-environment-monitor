@@ -19,10 +19,12 @@ static void sensor_monitor_task(void *pvParameters)
            data.temperature,
            data.humidity);
 
-    mqtt_publish_environment(
+ if (mqtt_publish_environment(
         data.temperature,
-        data.humidity
-    );
+        data.humidity) != 0)
+{
+    printf("WARNING: Failed to publish environmental data\n");
+}
 }
         else
         {
@@ -56,8 +58,15 @@ void app_main(void)
         printf("Environmental sensor initialized successfully\n");
     }
 
-    wifi_manager_init();
-    mqtt_manager_init();
+  wifi_manager_init();
+
+if (wifi_manager_wait_for_connection() != 0)
+{
+    printf("ERROR: Wi-Fi connection failed\n");
+    return;
+}
+
+mqtt_manager_init();
 
     xTaskCreate(
         sensor_monitor_task,
