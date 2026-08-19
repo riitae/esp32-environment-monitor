@@ -2,26 +2,24 @@
 
 An environmental monitoring project for the ESP32-S3, developed using ESP-IDF and C.
 
-The project uses a simulated environmental sensor to produce temperature and humidity readings. The sensor is accessed through an I²C interface. The ESP32 also connects to Wi-Fi and sends the readings using MQTT.
+The project uses a simulated environmental sensor to produce temperature and humidity readings. The sensor is accessed through a simulated I²C interface. The ESP32 application also includes Wi-Fi and MQTT communication.
 
-The project includes a separate sensor test that can be run without a physical sensor.
+The project includes a separate sensor test that can be run without physical hardware.
 
 ## Features
 
 * ESP32-S3 application developed with ESP-IDF
 * C and FreeRTOS
 * Separate components for the sensor, I²C, Wi-Fi, and MQTT
-* I²C communication
-* Simulated sensor using registers
+* Simulated I²C register communication
+* Simulated environmental sensor
 * Temperature and humidity readings
-* Sensor device-ID check
-* Sensor reading validation
+* Basic sensor initialization and validation
 * Wi-Fi connection and reconnection
-* MQTT connection handling
-* MQTT connection-state checking
-* MQTT publish-result checking
+* MQTT connection and publishing
+* Basic error handling
 * Periodic sensor readings
-* Sensor tests without physical sensor hardware
+* Sensor testing without physical hardware
 
 ## Project Architecture
 
@@ -41,7 +39,7 @@ Application
 
 The application reads temperature and humidity regularly, prints the readings, and sends them through MQTT.
 
-## Project Structure
+## Project Structure 
 
 ```text
 esp32-environment-monitor/
@@ -81,9 +79,7 @@ esp32-environment-monitor/
 │   └── test_environmental_sensor.c
 │
 ├── CMakeLists.txt
-├── dependencies.lock
-└── sdkconfig
-```
+└── dependencies.lock
 
 ## Components
 
@@ -109,7 +105,9 @@ The temperature and humidity values change gradually to simulate changing enviro
 
 This component provides the functions used by the environmental sensor to read and write sensor registers.
 
-For testing, the I²C functions communicate with the simulated sensor instead of a physical sensor.
+For this project, the I²C layer is simulated. Instead of communicating with a physical environmental sensor, the I²C functions access the simulated sensor registers.
+
+This allows the sensor driver logic to be developed and tested without physical hardware.
 
 ### Environmental Sensor
 
@@ -200,6 +198,8 @@ The project includes a separate sensor test:
 
 The test uses the simulated sensor, so a physical ESP32 or environmental sensor is not needed to run it.
 
+The compiled `tests/sensor_test` executable is only created locally and is excluded using `.gitignore`.
+
 ### Build the sensor test
 
 From the project folder:
@@ -239,9 +239,13 @@ Reading  7 | Temperature:  24.2 C | Humidity:  48.7 %
 Reading  8 | Temperature:  24.3 C | Humidity:  48.8 %
 Reading  9 | Temperature:  24.4 C | Humidity:  48.9 %
 Reading 10 | Temperature:  24.5 C | Humidity:  49.0 %
+
+PASS: All sensor readings are valid
+
 ```
 
 The `tests/sensor_test` file is created when the test is compiled. It is only a local test program and should not be committed to GitHub.
+
 
 ## Building the ESP32 Application
 
@@ -275,11 +279,12 @@ Do not put your real Wi-Fi password or other private information in the GitHub r
 
 Configure these values locally using the ESP-IDF configuration system.
 
+
 ## Running on the ESP32
 
-Connect an ESP32-S3 board and identify its serial port.
+The project is designed to run on an ESP32-S3 board.
 
-Flash the application with:
+After configuring the Wi-Fi and MQTT settings and connecting an ESP32-S3, the application can be flashed using:
 
 ```bash
 idf.py flash
@@ -297,7 +302,8 @@ To build, flash, and view the serial output:
 idf.py flash monitor
 ```
 
-The serial monitor should show sensor readings and Wi-Fi/MQTT status messages.
+The physical ESP32-S3 runtime was not tested during development because a board was not available. The sensor functionality was tested separately using the simulated hardware layer.
+
 
 ## Expected Application Output
 
@@ -363,7 +369,7 @@ This is my first embedded-systems project. It focuses on learning and implementi
 The project includes:
 
 * Sensor register simulation
-* I²C communication
+* Simulated I²C communication
 * Environmental sensor driver
 * FreeRTOS task
 * Wi-Fi connection
