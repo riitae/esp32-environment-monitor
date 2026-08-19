@@ -80,6 +80,7 @@ esp32-environment-monitor/
 │
 ├── CMakeLists.txt
 └── dependencies.lock
+```
 
 ## Components
 
