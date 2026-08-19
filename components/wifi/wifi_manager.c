@@ -57,6 +57,12 @@ void wifi_manager_init(void)
 {
     wifi_event_group = xEventGroupCreate();
 
+    if (wifi_event_group == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to create Wi-Fi event group");
+        return;
+    }
+
     ESP_ERROR_CHECK(nvs_flash_init());
 
     ESP_ERROR_CHECK(esp_netif_init());

@@ -47,6 +47,12 @@ void mqtt_manager_init(void)
 
     mqtt_client = esp_mqtt_client_init(&mqtt_config);
 
+if (mqtt_client == NULL)
+{
+    ESP_LOGE(TAG, "Failed to initialize MQTT client");
+    return;
+}
+
     ESP_ERROR_CHECK(
         esp_mqtt_client_register_event(
             mqtt_client,

@@ -6,6 +6,9 @@ int main(void)
 {
     environmental_data_t data;
 
+    float previous_temperature = 0.0f;
+    float previous_humidity = 0.0f;
+
     printf("=== Environmental Sensor Test ===\n\n");
 
     if (environmental_sensor_init() != 0)
@@ -42,6 +45,17 @@ int main(void)
             printf("FAIL: Humidity out of expected range\n");
             return 1;
         }
+
+        if (i > 0 &&
+            data.temperature == previous_temperature &&
+            data.humidity == previous_humidity)
+        {
+            printf("FAIL: Sensor readings are not changing\n");
+            return 1;
+        }
+
+        previous_temperature = data.temperature;
+        previous_humidity = data.humidity;
     }
 
     printf("\nPASS: All sensor readings are valid\n");
